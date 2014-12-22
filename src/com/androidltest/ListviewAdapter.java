@@ -4,11 +4,9 @@ import java.util.Random;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import cn.keyshare.inlearning.kejian.hd.R;
@@ -17,12 +15,10 @@ import cn.keyshare.inlearning.kejian.hd.R;
  * @author ZhiCheng Guo
  * @version 2014年11月28日 下午6:17:20
  */
-public class ListviewAdapter extends BaseAdapter implements ActionModeInterface{
+public class ListviewAdapter extends ActionModeAdapter{
 	@SuppressWarnings("unused")
 	private static final String TAG = ListviewAdapter.class.getSimpleName();
 	
-	private SparseBooleanArray mSelectedState = new SparseBooleanArray();
-	private boolean mIsActionMode = false;
 	@Override
 	public int getCount() {
 		return 40;
@@ -57,92 +53,53 @@ public class ListviewAdapter extends BaseAdapter implements ActionModeInterface{
 		
 		viewHolder.mTextView.setText("位置是" + String.valueOf(position) + "你好" + r);
 		
-		if (isInActionMode() && isChecked(position)) {
-			viewHolder.mBackground.setBackgroundColor(Color.GREEN);
-		} else {
-			viewHolder.mBackground.setBackgroundColor(Color.WHITE);
-		}
-		
 		final View background = viewHolder.mBackground;
+
+		updateBackground(background, position);
+		
 		convertView.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				if (isInActionMode()) {
 					toggleCheck(p);
-					if (isChecked(p)) {
-						background.setBackgroundColor(Color.GREEN);
-					} else {
-						background.setBackgroundColor(Color.WHITE);
-					}
+					updateBackground(background,p);
 				} else {
 					Toast.makeText(context, "点击事件喽", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
 		
+		convertView.setOnLongClickListener(new View.OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (!isInActionMode()) {
+					startActionMode();
+					if (mStartActionModeListener != null) {
+						mStartActionModeListener.onStartActionMode();
+					}
+					setChecked(p);
+					updateBackground(background, p);
+				}
+				return true;
+			}
+		});
+		
 		return convertView;
+	}
+	
+	private void updateBackground(View view,int position) {
+		if (isInActionMode() && isChecked(position)) {
+			view.setBackgroundColor(Color.GREEN);
+		} else {
+			view.setBackgroundColor(Color.WHITE);
+		}		
 	}
 	
 	private class ViewHolder{
 		public TextView mTextView;
 		public View mBackground;
-	}
-
-	@Override
-	public void checkAll() {
-		for (int i=0;i<getCount(); ++i) {
-			setChecked(i);
-		}
-	}
-
-	@Override
-	public void unCheckAll() {
-		mSelectedState.clear();
-	}
-
-	@Override
-	public int getCheckedCount() {
-		return mSelectedState.size();
-	}
-
-	@Override
-	public void startActionMode() {
-		mIsActionMode = true;
-	}
-	
-	public void endActionMode() {
-		mIsActionMode = false;
-		mSelectedState.clear();
-	};
-
-	@Override
-	public boolean isInActionMode() {
-		return mIsActionMode;
-	}
-
-	@Override
-	public void setChecked(int position) {
-		mSelectedState.put(position, true);
-	}
-
-	@Override
-	public boolean isChecked(int position) {
-		return mSelectedState.get(position,false);
-	}
-
-	@Override
-	public void toggleCheck(int position) {
-		if (isChecked(position)) {
-			setUnChecked(position);
-		} else {
-			setChecked(position);
-		}
-	}
-
-	@Override
-	public void setUnChecked(int position) {
-		mSelectedState.delete(position);
 	}
 
 }

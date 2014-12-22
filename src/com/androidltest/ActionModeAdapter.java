@@ -1,79 +1,82 @@
 package com.androidltest;
 
 import android.util.SparseBooleanArray;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 /**
  * @author ZhiCheng Guo
  * @version 2014年12月22日 下午3:28:10
  */
-public class ActionModeAdapter extends BaseAdapter implements ActionModeInterface{
+public abstract class ActionModeAdapter extends BaseAdapter implements ActionModeInterface{
 
 	private SparseBooleanArray mSelectedState = new SparseBooleanArray();
 	private boolean mIsActionMode = false;
-	@Override
-	public int getCount() {
-		return 0;
+	
+	public interface StartActionModeListener {
+		public void onStartActionMode();
 	}
-
-	@Override
-	public Object getItem(int position) {
-		return null;
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return 0;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		return null;
-	}
-
+	
+	@SuppressWarnings("unused")
+	protected StartActionModeListener mStartActionModeListener;
+	
 	@Override
 	public void checkAll() {
+		for (int i=0;i<getCount(); ++i) {
+			setChecked(i);
+		}
 	}
 
 	@Override
 	public void unCheckAll() {
+		mSelectedState.clear();
 	}
 
 	@Override
 	public int getCheckedCount() {
-		return 0;
+		return mSelectedState.size();
 	}
 
 	@Override
 	public void startActionMode() {
+		mIsActionMode = true;
 	}
-
-	@Override
+	
 	public void endActionMode() {
-	}
+		mIsActionMode = false;
+		mSelectedState.clear();
+	};
 
 	@Override
 	public boolean isInActionMode() {
-		return false;
+		return mIsActionMode;
 	}
 
 	@Override
 	public void setChecked(int position) {
-	}
-
-	@Override
-	public void setUnChecked(int position) {
+		mSelectedState.put(position, true);
 	}
 
 	@Override
 	public boolean isChecked(int position) {
-		return false;
+		return mSelectedState.get(position,false);
 	}
 
 	@Override
 	public void toggleCheck(int position) {
+		if (isChecked(position)) {
+			setUnChecked(position);
+		} else {
+			setChecked(position);
+		}
+	}
+
+	@Override
+	public void setUnChecked(int position) {
+		mSelectedState.delete(position);
+	}
+	
+	public void setStartActionModeListener(StartActionModeListener l) {
+		mStartActionModeListener = l;
 	}
 
 }

@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import cn.keyshare.inlearning.kejian.hd.R;
 
+import com.androidltest.ActionModeAdapter.StartActionModeListener;
+
 public class MainActivity extends ActionBarActivity {
 	
 	private static final String[] strs = new String[] {
@@ -58,6 +60,14 @@ public class MainActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				startSupportActionMode(mCallback);
 				mListviewAdapter.startActionMode();
+			}
+		});
+		
+		mListviewAdapter.setStartActionModeListener(new StartActionModeListener() {
+			
+			@Override
+			public void onStartActionMode() {
+				startSupportActionMode(mCallback);
 			}
 		});
         
