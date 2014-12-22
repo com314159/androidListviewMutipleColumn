@@ -1,14 +1,17 @@
 package com.androidltest;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import cn.keyshare.inlearning.kejian.hd.R;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 	
 	private static final String[] strs = new String[] {
 		    "first", "second", "third", "fourth", "fifth",
@@ -53,11 +56,38 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				mGridListViewWrapperAdapter.notifyDataSetChanged();
+				startSupportActionMode(mCallback);
+				mListviewAdapter.startActionMode();
 			}
 		});
         
         
     }
+    
+    private ActionMode.Callback mCallback = new ActionMode.Callback() {  
+    	  
+        @Override  
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {  
+            return false;  
+        }  
+  
+        @Override  
+        public void onDestroyActionMode(ActionMode mode) {  
+           mListviewAdapter.endActionMode();
+           mGridListViewWrapperAdapter.notifyDataSetChanged();
+        }  
+  
+        @Override  
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {  
+              
+            return true;  
+        }  
+  
+        @Override  
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {  
+            boolean ret = false;  
+            return ret;  
+        }  
+    };  
     
 }
